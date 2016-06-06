@@ -3,7 +3,6 @@ import math
 import numpy 
 import time
 import cPickle
-import copy
 
 home_dir = './build'
 python_dir  = home_dir + '/python/'
@@ -34,9 +33,6 @@ class VAF:
             self.realIonZ = self.M.conf()['IonChargeStates'][0]
             self.BC0 = self.M.conf()['BaryCenter0']
             self.ENV0 = numpy.split(self.M.conf()['S0'],7)
-
-            #self.PRNseed = self.M.conf()['PRN_seed']
-            #self.PRNvalue = self.M.conf()['PRN_value']
 
             self.ldata = [[0.0]*6 for i in range(len(self.M))]
 
@@ -117,21 +113,15 @@ class VAF:
 
 
     def tcs(self,lpf=0):
-        #global M, refIonZ, realIonZ, BC0, ENV0, ldata
         
         S = self.M.allocState({})
         self.M.propagate(S, 0, 1)
-
-        #S.error_value      = self.errorv
 
         S.ref_IonZ    = self.refIonZ
         S.real_IonZ   = self.realIonZ
 
         S.moment0[:]  = self.BC0
         S.state[:]    = self.ENV0
-
-        #S.PRN_seed     = self.PRNseed
-        #S.PRN_value    = self.PRNvalue
 
         S.real_gamma  = S.real_IonW/S.real_IonEs;
         S.real_beta   = math.sqrt(1e0-1e0/S.real_gamma**2.0);
@@ -150,7 +140,6 @@ class VAF:
         self.ldata[0][5] = numpy.sqrt(S.state[2][2])
 
         for i in range(1,len(self.M)):
-            #print i
             self.M.propagate(S, i, 1)
             
             self.ldata[i][0] = S.pos
