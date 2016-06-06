@@ -4,7 +4,7 @@ import numpy
 import time
 import cPickle
 
-home_dir = './build'
+home_dir = '/build'
 python_dir  = home_dir + '/python/'
 file_name = './to_strl.lat'
 
@@ -13,14 +13,20 @@ sys.path.append(python_dir)
 from uscsi import Machine
 
 PS_X = 0; PS_PX = 1; PS_Y = 2; PS_PY = 3; PS_S = 4; PS_PS = 5
-
 MeVtoeV = 1e6
 
-
 class VAF:
+    """
+    Contains:
+    getelem(num)
+    setelem(num,name,value)
+    prt_lat_prms()
+    prt_lat()
+    tcs()
+    looptcs()
+    """
     def __init__(self, fname=file_name):
         self.name = fname
-
         self.itr = 0
 
         with open(self.name, 'rb') as inf:
@@ -34,8 +40,10 @@ class VAF:
             self.BC0 = self.M.conf()['BaryCenter0']
             self.ENV0 = numpy.split(self.M.conf()['S0'],7)
 
+            # memory space for all beam data
             self.ldata = [[0.0]*6 for i in range(len(self.M))]
 
+            # store element position data
             self.bpmls=[]
             self.corls=[]
             self.cavls=[]
@@ -54,18 +62,27 @@ class VAF:
                     self.solls.append(i)
                     self.solpara.append([elem['B']])
 
+            # output data for plotting
             with open('plot.info','w') as f:
                 iteminfo=[len(self.M),self.bpmls,self.corls,self.cavls,self.solls]
                 cPickle.dump(iteminfo,f)
 
 
-
-
     def getelem(self,num):
+        """
+        Get parameter of lattice element
+        getelem(position number of lattice element)
+        """
         print self.M.conf()['elements'][num]
 
 
     def setelem(self,num,name,val):
+        """
+        Set parameter of lattice element
+        setelem(position number of lattice element, 
+                name of parameter
+                value of parameter)
+        """
         #D = self.M.conf()['elements'][num]
         D = self.lat[num]
         D[name] = val
@@ -73,6 +90,7 @@ class VAF:
 
 
     """
+    # Developing
     def genRandomNoise(self):
         for (i,cv) in enumerate(self.cavls):
             D = self.M.conf()['elements'][cv]
@@ -97,7 +115,9 @@ class VAF:
 
     """
 
+    
     def prt_lat_prms(self):
+        """Print initial beam parameters in lattice file"""
         print '\nIon Charge States = ', self.M.conf()['IonChargeStates']
         print 'IonEs [MeV]       = ', self.M.conf()['IonEs']/1e6
         print 'IonEk [MeV]       = ', self.M.conf()['IonEk']/1e6
@@ -107,16 +127,16 @@ class VAF:
         print '\nBeam Envelope 2:\n', self.M.conf()['S1']
 
     def prt_lat(self):
+        """Print all lattice elements"""
         for (i,elem) in enumerate(self.M.conf()['elements']):
             print(i, elem['name'], elem['type'])
 
-
-
     def tcs(self,lpf=0):
-        
+        """Main function of one through calculation"""
         S = self.M.allocState({})
         self.M.propagate(S, 0, 1)
 
+        # set initial beam data
         S.ref_IonZ    = self.refIonZ
         S.real_IonZ   = self.realIonZ
 
@@ -132,6 +152,7 @@ class VAF:
 
         fin = len(self.M)
 
+        # store initial beam data
         self.ldata[0][0] = S.pos
         self.ldata[0][1] = S.moment0[0]
         self.ldata[0][2] = S.moment0[2]
@@ -139,6 +160,7 @@ class VAF:
         self.ldata[0][4] = numpy.sqrt(S.state[0][0])
         self.ldata[0][5] = numpy.sqrt(S.state[2][2])
 
+        # propagate step by step and store beam data
         for i in range(1,len(self.M)):
             self.M.propagate(S, i, 1)
             
@@ -149,14 +171,20 @@ class VAF:
             self.ldata[i][4] = numpy.sqrt(S.state[0][0])
             self.ldata[i][5] = numpy.sqrt(S.state[2][2])
 
+        #output data for plotting
         numpy.savetxt('ldata.txt',self.ldata)
 
         if not lpf: return S
 
     def looptcs(self):
-        while self.itr < 1:
-            #self.genRandomNoise()
+        """
+        Main loop for Virtual Accelerator
+        This function should be called as background job.     
+        Loop is stopped  by setting itr = 1.
+        """ 
+        while self.itr < 1: 
+            #self.genRandomNoise() #developing
             self.tcs(lpf=1)
-            #self.itr +=1
+            #self.itr +=1 
 
 

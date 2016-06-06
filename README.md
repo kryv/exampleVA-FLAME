@@ -1,5 +1,6 @@
 # exampleVA-FLAME
- 
+These scripts works on kryv repo [FLAME](https://github.com/kryv/jmbgsddb/tree/moment2).
+
 #### exVAF.py
   * main module.
 
