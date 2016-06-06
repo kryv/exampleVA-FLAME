@@ -1,6 +1,7 @@
 # exampleVA-FLAME
 These scripts work on kryv repo [FLAME](https://github.com/kryv/jmbgsddb/tree/moment2).
 
+
 #### exVAF.py
   * main module.
 
@@ -12,9 +13,3 @@ These scripts work on kryv repo [FLAME](https://github.com/kryv/jmbgsddb/tree/mo
  
 #### demo_opt.ipynb
   * ipython notebook demo for optimization.
-
-#### to_strl.lat
-  * lattice file.
-
-#### data
-  * cavity data.
