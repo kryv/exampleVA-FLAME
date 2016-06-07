@@ -3,10 +3,11 @@ import math
 import numpy 
 import time
 import cPickle
+import re
 
 home_dir = '/build'
-python_dir  = home_dir + '/python/'
-file_name = './to_strl.lat'
+python_dir  = home_dir + '/python'
+file_name = python_dir + '/uscsi/test/to_strl.lat'
 
 sys.path.append(python_dir)
 
@@ -37,6 +38,9 @@ class VAF:
 
             self.refIonZ = self.M.conf()['IonChargeStates'][0]
             self.realIonZ = self.M.conf()['IonChargeStates'][0]
+
+            self.refIonEk = self.M.conf()['IonEk']
+
             self.BC0 = self.M.conf()['BaryCenter0']
             self.ENV0 = numpy.split(self.M.conf()['S0'],7)
 
@@ -74,6 +78,22 @@ class VAF:
         getelem(position number of lattice element)
         """
         print self.M.conf()['elements'][num]
+
+
+    def getindex(self,name,searchby='name'):
+        """
+        Get index list of lattice elements
+        getindex(name or type,
+                 searchby = 'name')        
+        """
+        name = name.replace(':','_').lower()
+        pat = re.compile(name)
+        result = []
+
+        for (i,elem) in enumerate(self.lat):
+            if pat.search(elem[searchby]):
+                result.append(i)
+        return result
 
 
     def setelem(self,num,name,val):
@@ -121,15 +141,16 @@ class VAF:
         print '\nIon Charge States = ', self.M.conf()['IonChargeStates']
         print 'IonEs [MeV]       = ', self.M.conf()['IonEs']/1e6
         print 'IonEk [MeV]       = ', self.M.conf()['IonEk']/1e6
-        print '\nBaryCenter 1:\n', self.M.conf()['BaryCenter0']
-        print '\nBaryCenter 2:\n', self.M.conf()['BaryCenter1']
-        print '\nBeam Envelope 1:\n', self.M.conf()['S0']
-        print '\nBeam Envelope 2:\n', self.M.conf()['S1']
+        print '\nBaryCenter 0:\n', self.M.conf()['BaryCenter0']
+        print '\nBaryCenter 1:\n', self.M.conf()['BaryCenter1']
+        print '\nBeam Envelope 0:\n', self.M.conf()['S0']
+        print '\nBeam Envelope 1:\n', self.M.conf()['S1']
 
     def prt_lat(self):
         """Print all lattice elements"""
-        for (i,elem) in enumerate(self.M.conf()['elements']):
+        for (i,elem) in enumerate(self.lat):
             print(i, elem['name'], elem['type'])
+
 
     def tcs(self,lpf=0):
         """Main function of one through calculation"""
@@ -143,9 +164,15 @@ class VAF:
         S.moment0[:]  = self.BC0
         S.state[:]    = self.ENV0
 
-        S.real_gamma  = S.real_IonW/S.real_IonEs;
-        S.real_beta   = math.sqrt(1e0-1e0/S.real_gamma**2.0);
-        S.real_bg     = S.real_beta*S.real_gamma;
+        S.ref_IonEk   = self.refIonEk
+        S.real_IonEk  = self.refIonEk
+
+        #S.ref_IonW    = self.ref_IonEk + self.ref_IonEk
+        #S.real_IonW   = self.ref_IonW
+
+        #S.real_gamma  = S.real_IonW/S.real_IonEs;
+        #S.real_beta   = math.sqrt(1e0-1e0/S.real_gamma**2.0);
+        #S.real_bg     = S.real_beta*S.real_gamma;
 
         S.real_phis   = S.moment0[PS_S];
         S.real_IonEk  += S.moment0[PS_PS]*MeVtoeV;
