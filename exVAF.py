@@ -105,7 +105,7 @@ class VAF:
         """
         #D = self.M.conf()['elements'][num]
         D = self.lat[num]
-        D[name] = val
+        D[name] = float(val)
         self.M.reconfigure(num, D)
 
 
