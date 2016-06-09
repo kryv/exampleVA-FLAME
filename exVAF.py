@@ -4,8 +4,9 @@ import numpy
 import time
 import cPickle
 import re
+import fnmatch
 
-home_dir = '/build'
+home_dir = '/home/fukushim/software/flame_local/build'
 python_dir  = home_dir + '/python'
 file_name = python_dir + '/uscsi/test/to_strl.lat'
 
@@ -82,7 +83,7 @@ class VAF:
 
     def getindex(self,name,searchby='name'):
         """
-        Get index list of lattice elements
+        Get index list of lattice elements by python style regular expression
         getindex(name or type,
                  searchby = 'name')        
         """
@@ -92,6 +93,20 @@ class VAF:
 
         for (i,elem) in enumerate(self.lat):
             if pat.search(elem[searchby]):
+                result.append(i)
+        return result
+    
+    def getindexu(self,name,searchby='name'):
+        """
+        Get index list of lattice elements by unix style regular expression
+        getindex(name or type,
+                 searchby = 'name')        
+        """
+        name = name.replace(':','_').lower()
+        result = []
+
+        for (i,elem) in enumerate(self.lat):
+            if fnmatch.fnmatch(elem[searchby],name):
                 result.append(i)
         return result
 
