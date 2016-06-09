@@ -6,7 +6,7 @@ import cPickle
 import re
 import fnmatch
 
-home_dir = '/home/fukushim/software/flame_local/build'
+home_dir = './build'
 python_dir  = home_dir + '/python'
 file_name = python_dir + '/uscsi/test/to_strl.lat'
 
