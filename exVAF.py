@@ -37,6 +37,9 @@ class VAF:
 
             self.lat = self.M.conf()['elements']
 
+            #Flag for limited longitudinal run
+            self.clng = 0
+
             self.refIonZ = self.M.conf()['IonChargeStates'][0]
             self.realIonZ = self.M.conf()['IonChargeStates'][0]
 
@@ -78,7 +81,9 @@ class VAF:
         Get parameter of lattice element
         getelem(position number of lattice element)
         """
-        print self.M.conf()['elements'][num]
+        #print self.M.conf()['elements'][num]
+        print self.lat[num]
+
 
 
     def getindex(self,name,searchby='name'):
@@ -198,6 +203,8 @@ class VAF:
         S.real_phis   = S.moment0[PS_S];
         S.real_IonEk  += S.moment0[PS_PS]*MeVtoeV;
 
+        S.clng = self.clng
+
         fin = len(self.M)
 
         # store initial beam data
@@ -263,6 +270,8 @@ class VAF:
             S.ref_IonEk   = SD.refIonEk
             S.real_IonEk  = SD.refIonEk
             S.pos         = SD.pos
+
+        S.clng = self.clng
 
         S.real_phis   = S.moment0[PS_S];
         S.real_IonEk  += S.moment0[PS_PS]*MeVtoeV;
