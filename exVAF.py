@@ -81,9 +81,7 @@ class VAF:
         Get parameter of lattice element
         getelem(position number of lattice element)
         """
-        #print self.M.conf()['elements'][num]
-        print self.lat[num]
-
+        print self.M.conf()['elements'][num]
 
 
     def getindex(self,name,searchby='name'):
