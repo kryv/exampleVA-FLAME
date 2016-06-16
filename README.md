@@ -7,7 +7,7 @@ Now available for only LS1 and single charge state.
   * Main module. (VAF module automatically make plot.info and ldata.txt files in same directory.)
 
 #### exVAFm.py
-  * Main module for FLAME main repository [FLAME](https://github.com/kryv/FLAME).
+  * Main module for [FLAME main repository](https://github.com/kryv/FLAME).
 
 #### VAFmonitor.py
   * Realtime plotting script. [pyqtgraph](https://github.com/pyqtgraph/pyqtgraph) is required.
