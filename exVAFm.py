@@ -37,7 +37,7 @@ class VAF:
 
         with open(self.name, 'rb') as inf:
 
-            self.M = Machine(inf.read())
+            self.M = Machine(inf)
 
             self.lat = self.M.conf()['elements']
 
@@ -87,9 +87,17 @@ class VAF:
     def getelem(self,num):
         """
         Get parameter of lattice element
-        getelem(position number of lattice element)
+        getelem(index of lattice element)
         """
         print self.M.conf()['elements'][num]
+
+
+    def getvalue(self,num,name):
+        """
+        Get parameter of lattice element
+        getelem(index of lattice element, parameter name)
+        """
+        print self.M.conf(num)[naem]
 
 
     def getindex(self,name,searchby='name'):
@@ -130,9 +138,9 @@ class VAF:
                 value of parameter)
         """
         #D = self.M.conf()['elements'][num]
-        D = self.lat[num]
-        D[name] = float(val)
-        self.M.reconfigure(num, D)
+        #D = self.lat[num]
+        #D[name] = float(val)
+        self.M.reconfigure(num,{name:float(val)})
 
 
     """
@@ -205,6 +213,7 @@ class VAF:
 
         fin = len(self.M)
 
+        
         # store initial beam data
         self.LD[0][0] = S.pos
 
@@ -216,13 +225,14 @@ class VAF:
         self.LD[0][5] = S.moment0_rms[2]
         self.LD[0][6] = S.ref_phis
         self.LD[0][7] = S.ref_IonEk
+        
 
         # propagate step by step and store beam data
         for i in range(1,len(self.M)):
             self.M.propagate(S, i, 1)
             
-            self.LD[i][0] = S.pos
             
+            self.LD[i][0] = S.pos
             #Mean data
             self.LD[i][1] = S.moment0_env[0]
             self.LD[i][2] = S.moment0_env[2]
@@ -232,6 +242,7 @@ class VAF:
             self.LD[i][6] = S.ref_phis
             self.LD[i][7] = S.ref_IonEk
             
+
         #output data for plotting
         if opf: numpy.savetxt('ldata.txt',self.LD)
 
