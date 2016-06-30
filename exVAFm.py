@@ -21,6 +21,7 @@ class VAF:
     """
     Contains:
     getelem(int)
+    getvalue(int,str)
     getindex(str)
     getindexu(str)
     setelem(int,str,float)
@@ -57,7 +58,7 @@ class VAF:
 
             # memory space for all beam data
             # self.LD = [[0.0]*8 for i in range(len(self.M))]
-            self.LD = numpy.zeros((len(self.M),8))
+            self.LD = numpy.zeros((len(self.M),9))
 
             # store element position data
             self.bpmls=[]
@@ -68,7 +69,8 @@ class VAF:
             self.solpara=[]
 
             for i in range(len(self.M)):
-                elem = self.M.conf()['elements'][i]
+                #elem = self.M.conf()['elements'][i]
+                elem = self.lat[i]
                 if elem['type'] == 'bpm' : self.bpmls.append(i)
                 elif elem['type'] == 'orbtrim' : self.corls.append(i)
                 elif elem['type'] == 'rfcavity' :
@@ -89,7 +91,7 @@ class VAF:
         Get parameter of lattice element
         getelem(index of lattice element)
         """
-        print self.M.conf()['elements'][num]
+        print self.lat[num]
 
 
     def getvalue(self,num,name):
@@ -209,7 +211,7 @@ class VAF:
         S.phis       = S.moment0[PS_S,:]
         S.IonEk      = S.moment0[PS_PS,:]*MeVtoeV + S.ref_IonEk
 
-        S.clng = self.clng
+        #S.clng = self.clng
 
         fin = len(self.M)
 
@@ -223,8 +225,9 @@ class VAF:
         self.LD[0][3] = S.moment0_env[4]
         self.LD[0][4] = S.moment0_rms[0]
         self.LD[0][5] = S.moment0_rms[2]
-        self.LD[0][6] = S.ref_phis
-        self.LD[0][7] = S.ref_IonEk
+        self.LD[0][6] = S.moment0_rms[4]
+        self.LD[0][7] = S.ref_phis
+        self.LD[0][8] = S.ref_IonEk
         
 
         # propagate step by step and store beam data
@@ -239,8 +242,9 @@ class VAF:
             self.LD[i][3] = S.moment0_env[4]
             self.LD[i][4] = S.moment0_rms[0]
             self.LD[i][5] = S.moment0_rms[2]
-            self.LD[i][6] = S.ref_phis
-            self.LD[i][7] = S.ref_IonEk
+            self.LD[i][6] = S.moment0_rms[4]
+            self.LD[i][7] = S.ref_phis
+            self.LD[i][8] = S.ref_IonEk
             
 
         #output data for plotting
@@ -297,7 +301,7 @@ class VAF:
 
         phis_ini      = S.ref_phis
 
-        S.clng = self.clng
+        #S.clng = self.clng
 
         fin = end - start + 1
         RD = numpy.zeros((fin,8))
