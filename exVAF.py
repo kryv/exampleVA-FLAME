@@ -7,11 +7,9 @@ import re
 import fnmatch
 import collections
 
-#home_dir = '/home/fukushim/software/flame_main_local/build'
-home_dir = '/home/fukushim/software/flame_local/build'
+home_dir = './build'
 python_dir  = home_dir + '/python'
-#file_name = python_dir + '/flame/test/to_strl.lat'
-file_name = '/home/fukushim/software/flame_main_local/lat/to_strl.lat'
+file_name = python_dir + '/flame/test/to_strl.lat'
 
 sys.path.append(python_dir)
 
