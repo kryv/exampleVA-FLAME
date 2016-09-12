@@ -455,7 +455,7 @@ tcs(lpf=0, opf=1)
         return U,T
 
         
-    def tcss(self,start=None,end=None,S_in=None,allcs=0,opf=1):
+    def tcss(self,start=None,end=None,S_in=None,obs=None):
 
         if start == None : start = 1
         if end == None : end = len(self.M) -1
@@ -478,7 +478,10 @@ tcs(lpf=0, opf=1)
         
         else :
             # set initial beam data
-            S = S_in.clone()      
+            S = S_in.clone()
+
+        if obs == None :
+            obs = range(len(self.M))
 
         #S.clng = self.clng
 
@@ -486,10 +489,11 @@ tcs(lpf=0, opf=1)
 
         fin = end - start + 1
 
-        H = self.M.propagate(S, start, fin, observe=range(len(self.M)))
+        #H = self.M.propagate(S, start, fin, observe=range(len(self.M)))
+        H = self.M.propagate(S, start, fin, observe=obs)
 
-        return [H_ini] + H
-        #return H
+        if not obs[0]: return [H_ini] + H
+        else: return H
         
         
     def looptcs(self):
